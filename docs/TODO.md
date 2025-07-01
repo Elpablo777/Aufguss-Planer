@@ -1,9 +1,7 @@
 # ToDo-Liste
 
 ## Offene Aufgaben
-- [ ] Projektstruktur (Backend, Frontend, Docs, .github) anlegen
-- [ ] Grundlegende Dokumentation (Wiki, README, Lizenz, Datenschutz)
-- [ ] Backend-Setup (Django-Projekt, User-Modell, API)
+- [ ] Backend: User-Modell, API, Channels konfigurieren
 - [ ] Frontend-Setup (React, Kalender, Auth)
 - [ ] GitHub-Workflows & Templates
 - [ ] Lizenz & Datenschutz
@@ -11,3 +9,4 @@
 ## Erledigt
 - [x] .gitignore und README.md erstellt
 - [x] Wiki und ToDo-Liste angelegt
+- [x] Backend: Django-Projekt initialisiert, requirements und README angelegt

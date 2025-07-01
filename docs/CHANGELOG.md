@@ -6,3 +6,4 @@ Alle Änderungen am Projekt werden hier dokumentiert. Für Details siehe auch di
 - Initiale Projektstruktur angelegt
 - .gitignore und README.md erstellt/überarbeitet
 - Wiki und ToDo-Liste angelegt
+- Backend: Django-Projekt initialisiert, requirements und README angelegt
