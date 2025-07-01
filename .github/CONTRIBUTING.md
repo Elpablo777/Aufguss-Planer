@@ -20,5 +20,9 @@ Vielen Dank für dein Interesse an diesem Open-Source-Projekt!
 - Alle PRs werden von der KI und dem Hauptadmin geprüft.
 - Nur nach Review und erfolgreichem Check wird gemergt.
 
+## Verhaltenskodex
+
+Bitte beachte den [Verhaltenskodex (CODE_OF_CONDUCT.md)](../CODE_OF_CONDUCT.md) – respektvoller, inklusiver Umgang ist Voraussetzung für alle Beiträge.
+
 ## Kontakt
 - Hauptadmin: Hannover84@msn.com

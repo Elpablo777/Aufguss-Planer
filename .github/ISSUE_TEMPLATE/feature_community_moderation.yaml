@@ -1,0 +1,27 @@
+---
+name: "Feature/Verbesserung vorschlagen"
+about: "Schlage ein neues Feature, eine Verbesserung oder einen Community-/Moderationswunsch vor."
+title: "[Feature/Verbesserung] <Kurzbeschreibung>"
+labels: ["feature", "enhancement", "community", "moderation"]
+assignees: []
+---
+
+## Beschreibung
+
+<!-- Beschreibe das gewünschte Feature, die Verbesserung oder den Moderationswunsch. -->
+
+## Motivation & Nutzen
+
+<!-- Warum ist das Feature/der Wunsch wichtig? Wer profitiert davon? -->
+
+## Umsetzungsideen
+
+<!-- (Optional) Technische Hinweise, UI/UX-Ideen, API, etc. -->
+
+## Offene Fragen
+
+<!-- Gibt es offene Fragen, Abhängigkeiten oder Diskussionsbedarf? -->
+
+---
+
+*Bitte nutze für Fehler/Bugs das Bug-Template und für Security-Themen das Security-Template.*

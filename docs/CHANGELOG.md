@@ -11,3 +11,12 @@ Alle Änderungen am Projekt werden hier dokumentiert. Für Details siehe auch di
 - Frontend: React/TypeScript-Projekt initialisiert, Kalender-Abhängigkeiten installiert
 - Frontend: Grundstruktur (src, public, tsconfig), Kalender-Komponente, Styles und Startskripte angelegt
 - Backend: Channels/ASGI, Routing und WebSocket-Consumer für Aufguss- und Chat-Echtzeit-Updates angelegt
+
+## [Unreleased]
+### Hinzugefügt
+- WebSocket-Authentifizierung für Chat und Aufguss-Live-Updates (Kalender) im Backend (consumers.py)
+- Frontend: WebSocket-Verbindung mit JWT-Token für Chat und Kalender
+- Live-Updates für Aufguss-Plan (Kalender) bei Änderungen
+
+### Geändert
+- Sicherheit und Kollaboration durch Authentifizierung und Live-Updates verbessert

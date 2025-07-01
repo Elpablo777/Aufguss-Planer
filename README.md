@@ -34,5 +34,41 @@ Dieses Repository enthält die offene Entwicklung einer cloudbasierten Web-App z
 3. **Erweiterungen:** Chat, Avatare, Admin-Panel, Benachrichtigungen
 4. **Tests & Deployment:** Funktionstests, Hosting, Dokumentation
 
+## Projektbeschreibung
+
+**Aufguss-Planer** ist eine offene, kollaborative Web-App zur Koordination von Sauna-Aufgüssen und Teams. Ziel ist es, die Planung, Kommunikation und Organisation von Aufguss-Sessions für Saunabetriebe, Vereine und Aufgussmeister*innen zu vereinfachen – transparent, sicher und gemeinschaftlich.
+
+**Features:**
+- Benutzerverwaltung & Rechte
+- Kalender mit Aufgussplanung (CRUD)
+- Live-Chat & Team-Kommunikation
+- Admin-Panel & Rollen
+- Barrierefreiheit & Datenschutz
+- Moderne UI (React, TypeScript, Django)
+- Offene API, Dokumentation, Community-Features
+
+**Mitmachen:**
+Jede*r ist eingeladen, sich zu beteiligen! Siehe [CONTRIBUTING](.github/CONTRIBUTING.md), [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [Wiki](https://github.com/Elpablo777/Aufguss-Planer/wiki) und [Discussions](https://github.com/Elpablo777/Aufguss-Planer/discussions).
+
+## Community-Workflows
+
+- [Projects-Workflow](docs/Projects-Workflow.md): Aufgabenverwaltung, Kanban, Automatisierung
+- [Discussions-Moderation](docs/Discussions-Moderation.md): Austausch, Moderation, Community-Regeln
+- [Admin- und Moderationsfunktionen](./docs/Admin-Moderation.md)
+- [Community-Workflows](./docs/Community-Workflows.md)
+
+## Verhaltenskodex
+
+Dieses Projekt und alle Mitwirkenden verpflichten sich zu einem respektvollen, offenen und inklusiven Umgang. Siehe [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) für Details.
+
 ## Lizenz
 Dieses Projekt ist Open Source und steht unter der MIT-Lizenz.
+
+## Dokumentationen
+
+Für eine transparente Open-Source-Entwicklung sind hier die aktuellen Dokumentationen zu finden:
+- [Accessibility-Tests](./docs/ACCESSIBILITY_TESTS.md)
+- [Security-Checks](./docs/SECURITY_CHECKS.md)
+- [Testabdeckung & E2E](./docs/Testabdeckung-E2E.md)
+- [Features & Usability (Roadmap)](./docs/Features-Roadmap.md)
+- [Benutzerfreundlichkeit & Verständlichkeit](./docs/GITHUB_BENUTZERFREUNDLICH.md)
