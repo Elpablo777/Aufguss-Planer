@@ -13,11 +13,18 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const { isAuthenticated } = useAuth();
+  const [userId, setUserId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) return;
+    // User-ID dynamisch aus dem Token holen
+    const token = localStorage.getItem('access');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUserId(payload.user_id);
+    }
     ws.current = new WebSocket('ws://' + window.location.host + '/ws/chat/');
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -40,8 +47,8 @@ const Chat: React.FC = () => {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() && ws.current) {
-      ws.current.send(JSON.stringify({ message: newMessage, user_id: 1 })); // TODO: user_id dynamisch
+    if (newMessage.trim() && ws.current && userId) {
+      ws.current.send(JSON.stringify({ message: newMessage, user_id: userId }));
       setNewMessage('');
     }
   };
@@ -50,7 +57,7 @@ const Chat: React.FC = () => {
     <div className="chat-container">
       <div className="chat-messages">
         {messages.map(msg => (
-          <div key={msg.id} className={msg.sender_id === 1 ? 'my-message' : 'other-message'}>
+          <div key={msg.id} className={msg.sender_id === userId ? 'my-message' : 'other-message'}>
             <div className="message-header">
               <span className="sender-name">{msg.sender_name}</span>
               <span className="timestamp">{msg.timestamp}</span>
