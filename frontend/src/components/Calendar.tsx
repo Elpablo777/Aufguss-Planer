@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -6,15 +6,30 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { AufgussSession } from '../types';
 import { fetchAufguesse, createAufguss, updateAufguss, deleteAufguss } from '../api';
 import AufgussDialog from './AufgussDialog';
+import { useAuth } from '../context/AuthContext';
 
 const Calendar: React.FC = () => {
   const [aufguesse, setAufguesse] = useState<AufgussSession[]>([]);
   const [selectedAufguss, setSelectedAufguss] = useState<AufgussSession | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const wsAufguss = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     loadAufguesse();
+
+    // WebSocket für Live-Updates
+    const token = localStorage.getItem('access');
+    if (token) {
+      wsAufguss.current = new WebSocket('ws://' + window.location.host + '/ws/aufguss/?token=' + token);
+      wsAufguss.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'aufguss_update') {
+          loadAufguesse();
+        }
+      };
+    }
+    return () => { wsAufguss.current?.close(); };
   }, []);
 
   const loadAufguesse = async () => {

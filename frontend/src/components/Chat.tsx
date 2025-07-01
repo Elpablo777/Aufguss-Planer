@@ -24,20 +24,20 @@ const Chat: React.FC = () => {
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       setUserId(payload.user_id);
+      ws.current = new WebSocket('ws://' + window.location.host + '/ws/chat/?token=' + token);
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'chat_message') {
+          setMessages(prev => [...prev, {
+            id: Date.now(),
+            sender_id: data.user_id,
+            sender_name: data.username,
+            content: data.message,
+            timestamp: data.timestamp
+          }]);
+        }
+      };
     }
-    ws.current = new WebSocket('ws://' + window.location.host + '/ws/chat/');
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'chat_message') {
-        setMessages(prev => [...prev, {
-          id: Date.now(),
-          sender_id: data.user_id,
-          sender_name: data.username,
-          content: data.message,
-          timestamp: data.timestamp
-        }]);
-      }
-    };
     return () => { ws.current?.close(); };
   }, [isAuthenticated]);
 
