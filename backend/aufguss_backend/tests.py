@@ -466,13 +466,15 @@ class TestChatConsumer:
         # (z.B. simuliert durch den receive-Handler eines anderen Clients)
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
-            "chat", # Gruppenname
+            "chat",  # Gruppenname
             {
-                "type": "chat.message",  # Muss dem Handler-Namen im Consumer entsprechen (chat_message)
+                "type": "chat.message",  # Handler-Name: chat_message
                 "message": "Broadcast test",
-                "user_id": sauna_user2.id, # Simuliert Nachricht von user2
+                "user_id": sauna_user2.id,  # Simuliert Nachricht von user2
                 "username": sauna_user2.full_name,
-                "timestamp": datetime.datetime.now().strftime("%d.%m.%Y, %H:%M:%S")
+                "timestamp": datetime.datetime.now().strftime(
+                    "%d.%m.%Y, %H:%M:%S"
+                )
             }
         )
 
