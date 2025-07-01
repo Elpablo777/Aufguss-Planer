@@ -37,15 +37,18 @@ Für Tests wird automatisch SQLite verwendet, wenn `PYTEST_CURRENT_TEST` (von py
 ## 4. Code-Stil und Konventionen
 
 *   **Backend:**
-    *   Verwende `select_related` und `prefetch_related` in ViewSets, um N+1 Query-Probleme zu vermeiden.
+    *   Verwende `select_related` und `prefetch_related` in ViewSets, um N+1 Query-Probleme zu vermeiden (bereits für `AufgussViewSet`, `UserViewSet`, `ChatViewSet` umgesetzt).
     *   Typ-Hints sind erwünscht, aber noch nicht durchgängig vorhanden.
+    *   **Berechtigungsklassen:** Für Objekt-Level-Berechtigungen wurden `IsOwnerOrAdminOrReadOnly` (für `AufgussViewSet`) und `IsSenderOrAdminOrReadOnly` (für `ChatViewSet`) in `backend/aufguss_backend/aufguss_app/views.py` implementiert. Diese stellen sicher, dass nur Eigentümer oder Admins bestimmte schreibende Operationen durchführen können.
 *   **Frontend:**
     *   Vermeide Inline-Styles zugunsten von CSS-Dateien oder CSS-in-JS-Lösungen.
     *   Komponenten sollten möglichst klein und fokussiert sein.
+    *   Für das Linting wurde `eslint` mit den Plugins `eslint-plugin-react`, `eslint-plugin-react-hooks`, `@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser`, `eslint-plugin-jest-dom` und `eslint-plugin-testing-library` zu den `devDependencies` in `frontend/package.json` hinzugefügt und eine Basiskonfiguration in `frontend/.eslintrc.js` erstellt.
 
-## 5. Wichtige Annahmen bei letzten Änderungen
+## 5. Wichtige Hinweise und getroffene Entscheidungen
 
-*   Für das Frontend-Linting in der CI wird angenommen, dass ESLint korrekt im `frontend`-Verzeichnis konfiguriert ist und über `npm run lint` ausgeführt werden kann.
-*   Die `backend/requirements.txt` sollte `psycopg2-binary` (statt `psycopg2`) enthalten, wenn keine Build-Tools für `psycopg2` in der CI-Umgebung vorhanden sind, um die Installation zu vereinfachen. Dies wurde noch nicht explizit geprüft.
+*   Die `backend/requirements.txt` verwendet nun `psycopg2-binary` statt `psycopg2` für eine einfachere Installation.
+*   **Consumer-Tests:** Für `AufgussConsumer` und `ChatConsumer` wurden grundlegende Tests mit `channels.testing.WebsocketCommunicator` in `backend/aufguss_backend/tests.py` hinzugefügt. Diese sind als `@pytest.mark.asyncio` markiert.
+*   **Frontend-Komponententests:** Erste Komponententests für `Login.tsx` wurden in `frontend/src/__tests__/Login.test.tsx` erstellt, die `@testing-library/react` verwenden und den `AuthContext` mocken.
 
 Bitte halte dich an diese Hinweise, um die Konsistenz und Qualität des Projekts zu gewährleisten.
