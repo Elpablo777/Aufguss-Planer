@@ -13,6 +13,7 @@ const Calendar: React.FC = () => {
   const [selectedAufguss, setSelectedAufguss] = useState<AufgussSession | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null); // Zustand für Fehlermeldungen
   const wsAufguss = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -21,7 +22,8 @@ const Calendar: React.FC = () => {
     // WebSocket für Live-Updates
     const token = localStorage.getItem('access');
     if (token) {
-      wsAufguss.current = new WebSocket('ws://' + window.location.host + '/ws/aufguss/?token=' + token);
+      // Token wird jetzt im Sec-WebSocket-Protocol Header gesendet
+      wsAufguss.current = new WebSocket('ws://' + window.location.host + '/ws/aufguss/', [token]);
       wsAufguss.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'aufguss_update') {
@@ -36,9 +38,10 @@ const Calendar: React.FC = () => {
     try {
       const data = await fetchAufguesse();
       setAufguesse(data);
+      setError(null); // Fehler zurücksetzen bei Erfolg
     } catch (error) {
-      // Fehlerbehandlung
-      alert('Fehler beim Laden der Aufgüsse');
+      console.error("Fehler beim Laden der Aufgüsse:", error);
+      setError('Fehler beim Laden der Aufgüsse. Bitte versuchen Sie es später erneut.');
     }
   };
 
@@ -74,9 +77,11 @@ const Calendar: React.FC = () => {
         await updateAufguss(aufguss);
       }
       setIsDialogOpen(false);
+      setError(null);
       loadAufguesse();
     } catch (error) {
-      alert('Fehler beim Speichern des Aufgusses');
+      console.error("Fehler beim Speichern des Aufgusses:", error);
+      setError('Fehler beim Speichern des Aufgusses.');
     }
   };
 
@@ -85,9 +90,11 @@ const Calendar: React.FC = () => {
       try {
         await deleteAufguss(selectedAufguss.id);
         setIsDialogOpen(false);
+        setError(null);
         loadAufguesse();
       } catch (error) {
-        alert('Fehler beim Löschen des Aufgusses');
+        console.error("Fehler beim Löschen des Aufgusses:", error);
+        setError('Fehler beim Löschen des Aufgusses.');
       }
     }
   };
@@ -107,6 +114,14 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="calendar-container">
+      {error && (
+        <div style={{ color: 'red', padding: '10px', border: '1px solid red', marginBottom: '10px' }}>
+          {error}
+          <button onClick={() => setError(null)} style={{ marginLeft: '10px' }}>
+            Schließen
+          </button>
+        </div>
+      )}
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"

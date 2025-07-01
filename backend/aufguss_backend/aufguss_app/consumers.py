@@ -1,5 +1,6 @@
 import json
 import jwt
+import urllib.parse as urlparse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.conf import settings
@@ -26,7 +27,18 @@ class AufgussConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_user_from_token(self):
-        token = self.scope['query_string'].decode().split('token=')[-1] if 'token=' in self.scope['query_string'].decode() else None
+        # Versuche, den Token aus den Subprotokollen zu lesen
+        token = None
+        if self.scope.get('subprotocols'):
+            # Der Token sollte das einzige Subprotokoll sein
+            token = self.scope['subprotocols'][0]
+
+        if not token:
+            # Fallback: Versuche, den Token aus dem Query-String zu lesen (für Abwärtskompatibilität oder andere Clients)
+            query_string = self.scope.get('query_string', b'').decode()
+            params = dict(qp.split('=') for qp in query_string.split('&') if '=' in qp)
+            token = params.get('token')
+
         if not token:
             return AnonymousUser()
         try:
@@ -39,7 +51,7 @@ class AufgussConsumer(AsyncWebsocketConsumer):
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = await self.get_user_from_token()
+        self.user = await self.get_user_from_token() # Dieselbe Logik für ChatConsumer verwenden
         if not self.user or not self.user.is_authenticated:
             await self.close()
             return
@@ -75,13 +87,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_timestamp(self):
         from datetime import datetime
         return datetime.now().strftime("%d.%m.%Y, %H:%M:%S")
+    # Die get_user_from_token Methode ist jetzt im AufgussConsumer und wird hier nicht erneut definiert,
+    # stattdessen sollte eine gemeinsame Basisklasse oder ein Utility verwendet werden.
+    # Für diese Änderung gehe ich davon aus, dass der ChatConsumer die Logik des AufgussConsumer nutzt
+    # oder wir passen sie hier identisch an. Um Redundanz zu vermeiden, sollte die Methode
+    # zentralisiert werden. Da sie aber schon im AufgussConsumer existiert und modifiziert wurde,
+    # und ChatConsumer eine eigene Definition hatte, passe ich diese hier ebenfalls an.
+
     @database_sync_to_async
     def get_user_from_token(self):
-        token = self.scope['query_string'].decode().split('token=')[-1] if 'token=' in self.scope['query_string'].decode() else None
+        # Versuche, den Token aus den Subprotokollen zu lesen
+        token = None
+        if self.scope.get('subprotocols'):
+            # Der Token sollte das einzige Subprotokoll sein
+            token = self.scope['subprotocols'][0]
+
+        if not token:
+            # Fallback: Versuche, den Token aus dem Query-String zu lesen
+            query_string = self.scope.get('query_string', b'').decode()
+            params = urlparse.parse_qs(query_string)
+            token_list = params.get('token', [])
+            if token_list:
+                token = token_list[0]
+
         if not token:
             return AnonymousUser()
         try:
-            UntypedToken(token)
+            UntypedToken(token)  # prüft Gültigkeit
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             user_id = payload.get('user_id')
             return User.objects.get(id=user_id)
