@@ -14,7 +14,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return request.user.is_staff
 
 class AufgussViewSet(viewsets.ModelViewSet):
-    queryset = AufgussSession.objects.all()
+    queryset = AufgussSession.objects.select_related('created_by').all()
     serializer_class = AufgussSerializer
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user.saunauser)
@@ -25,7 +25,8 @@ class AufgussViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = SaunaUser.objects.all()
+    # SaunaUser.user ist ein OneToOneField, daher select_related für Optimierung
+    queryset = SaunaUser.objects.select_related('user').all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrReadOnly]
     @action(detail=False, methods=['get'])
@@ -34,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class ChatViewSet(viewsets.ModelViewSet):
-    queryset = ChatMessage.objects.all()
+    queryset = ChatMessage.objects.select_related('sender').all()
     serializer_class = ChatMessageSerializer
     def perform_create(self, serializer):
         serializer.save(sender=self.request.user.saunauser)

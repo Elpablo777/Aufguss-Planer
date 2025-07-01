@@ -21,12 +21,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ot3j5pl9(skgw^2q5yin((x5w^hih8h@#za6mz-qsdv-$tvsdx"
+# Load SECRET_KEY from environment variable or use a default for local development (NOT FOR PRODUCTION)
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY", "django-insecure-ot3j5pl9(skgw^2q5yin((x5w^hih8h@#za6mz-qsdv-$tvsdx"
+)
+# It is strongly recommended to set a unique DJANGO_SECRET_KEY in your production environment.
+# The default key above is INSECURE and only for local development if DJANGO_SECRET_KEY is not set.
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Load DEBUG status from environment variable, default to False for production
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+# Load ALLOWED_HOSTS from environment variable, default to localhost for development
+# In production, set DJANGO_ALLOWED_HOSTS to a space-separated string of your hostnames (e.g., "yourdomain.com www.yourdomain.com")
+ALLOWED_HOSTS_STRING = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1")
+ALLOWED_HOSTS = ALLOWED_HOSTS_STRING.split()
+# If DEBUG is True and ALLOWED_HOSTS is empty (e.g. DJANGO_ALLOWED_HOSTS was explicitly set to empty string),
+# Django defaults to ['localhost', '127.0.0.1', '[::1]']. We ensure some defaults if not in DEBUG.
+if not DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"] # Default for production if not set, though it should be set.
 
 
 # Application definition
@@ -78,24 +91,36 @@ ASGI_APPLICATION = "aufguss_backend.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Load database configuration from environment variables
+# Fallback to default values for local development (PostgreSQL)
+
+DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.postgresql")
+DB_NAME_DEFAULT = "aufguss_db" if DB_ENGINE == "django.db.backends.postgresql" else str(BASE_DIR / "db.sqlite3")
+DB_NAME = os.environ.get("DB_NAME", DB_NAME_DEFAULT)
+DB_USER = os.environ.get("DB_USER", "postgres")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "postgres")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = os.environ.get("DB_PORT", "5432")
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "aufguss_db",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "ENGINE": DB_ENGINE,
+        "NAME": DB_NAME,
+        "USER": DB_USER if DB_ENGINE == "django.db.backends.postgresql" else "",
+        "PASSWORD": DB_PASSWORD if DB_ENGINE == "django.db.backends.postgresql" else "",
+        "HOST": DB_HOST if DB_ENGINE == "django.db.backends.postgresql" else "",
+        "PORT": DB_PORT if DB_ENGINE == "django.db.backends.postgresql" else "",
     }
 }
 
-# Für Tests: SQLite statt PostgreSQL, wenn ENV-Variable gesetzt
+# Override for tests: Use SQLite if specific environment variables are set
+# This simplifies test setup and execution, especially in CI environments.
 if os.environ.get("USE_SQLITE_FOR_TESTS") == "1" or os.environ.get("PYTEST_CURRENT_TEST"):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "test_db.sqlite3",
-        }
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "test_db.sqlite3",
     }
 
 
