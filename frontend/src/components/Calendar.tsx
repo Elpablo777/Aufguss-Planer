@@ -23,16 +23,55 @@ const Calendar: React.FC = () => {
     const token = localStorage.getItem('access');
     if (token) {
       // Token wird jetzt im Sec-WebSocket-Protocol Header gesendet
-      wsAufguss.current = new WebSocket('ws://' + window.location.host + '/ws/aufguss/', [token]);
-      wsAufguss.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'aufguss_update') {
-          loadAufguesse();
+      const socketUrl = 'ws://' + window.location.host + '/ws/aufguss/';
+      let socket = new WebSocket(socketUrl, [token]);
+
+      socket.onopen = () => {
+        console.log('Aufguss WebSocket Verbindung geöffnet.');
+        wsAufguss.current = socket; // Speichere die erfolgreiche Verbindung
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data as string);
+          if (data.type === 'aufguss_update') {
+            console.log('Aufguss Update via WebSocket empfangen:', data);
+            loadAufguesse();
+          }
+        } catch (e) {
+          console.error('Fehler beim Parsen der WebSocket Nachricht:', e);
         }
       };
+
+      socket.onerror = (error) => {
+        console.error('Aufguss WebSocket Fehler:', error);
+        // Hier könnte eine UI-Benachrichtigung oder komplexere Fehlerbehandlung erfolgen
+      };
+
+      socket.onclose = (event) => {
+        console.log('Aufguss WebSocket Verbindung geschlossen:', event.code, event.reason);
+        wsAufguss.current = null; // Verbindung als geschlossen markieren
+        // Einfacher Reconnect-Versuch nach kurzer Verzögerung (optional, kann zu Schleifen führen ohne gute Logik)
+        // if (event.code !== 1000) { // 1000 = Normal closure
+        //   console.log('Versuche erneuten WebSocket-Verbindungsaufbau in 5 Sekunden...');
+        //   setTimeout(() => {
+        //     // TODO: Hier müsste die Logik zum Neuaufbau der Verbindung erneut getriggert werden,
+        //     // was in einem useEffect-Hook komplexer ist, ohne den Hook erneut auszulösen.
+        //     // Für eine robuste Lösung wäre eine eigene Hook- oder Service-Logik besser.
+        //   }, 5000);
+        // }
+      };
+      // wsAufguss.current = socket; // Wird jetzt in onopen gesetzt
+
     }
-    return () => { wsAufguss.current?.close(); };
-  }, []);
+    return () => {
+      if (wsAufguss.current) {
+        console.log('Schließe Aufguss WebSocket Verbindung beim Unmount.');
+        wsAufguss.current.close();
+        wsAufguss.current = null;
+      }
+    };
+  }, []); // Abhängigkeitsarray bleibt leer, um nur beim Mount/Unmount auszuführen
 
   const loadAufguesse = async () => {
     try {

@@ -15,6 +15,7 @@ Das Backend (`backend/aufguss_backend/aufguss_backend/settings.py`) wurde so kon
 *   `DB_PASSWORD`: Passwort für den Datenbankbenutzer. Standard: `postgres`.
 *   `DB_HOST`: Host der Datenbank. Standard: `localhost`.
 *   `DB_PORT`: Port der Datenbank. Standard: `5432`.
+*   `REDIS_URL`: (Optional, für Produktion empfohlen) URL für die Verbindung zum Redis-Server für Channels (z.B. `redis://localhost:6379/0`). Wenn nicht gesetzt oder `DJANGO_DEBUG=True`, wird der `InMemoryChannelLayer` verwendet.
 
 Für Tests wird automatisch SQLite verwendet, wenn `PYTEST_CURRENT_TEST` (von pytest gesetzt) oder `USE_SQLITE_FOR_TESTS=1` (in CI gesetzt) vorhanden sind.
 
@@ -53,5 +54,6 @@ Für Tests wird automatisch SQLite verwendet, wenn `PYTEST_CURRENT_TEST` (von py
     *   Das Modul `frontend/src/api.ts` wird via `jest.mock('../api')` gemockt.
     *   FullCalendar-Komponenten werden via `jest.config.js` und dem Mock in `frontend/__mocks__/fullcalendar-react.js` gemockt. Der Mock wurde angepasst, um ein identifizierbares Element für Tests zu rendern.
     *   Globale `WebSocket` und `localStorage` werden bei Bedarf in den Testdateien gemockt.
+*   **Channel Layer:** Die Konfiguration für `CHANNEL_LAYERS` in `backend/aufguss_backend/aufguss_backend/settings.py` ist nun so eingestellt, dass sie `channels-redis` verwendet, wenn `REDIS_URL` als Umgebungsvariable gesetzt ist und `DEBUG=False`. Andernfalls wird der `InMemoryChannelLayer` als Fallback genutzt. Die Abhängigkeit `channels-redis` wurde zu `backend/requirements.txt` hinzugefügt.
 
 Bitte halte dich an diese Hinweise, um die Konsistenz und Qualität des Projekts zu gewährleisten.

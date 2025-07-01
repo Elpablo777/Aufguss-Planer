@@ -170,11 +170,42 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Channels-Konfiguration
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
+# Für Produktion wird ein robusterer Layer wie Redis empfohlen.
+# Lade REDIS_URL aus Umgebungsvariablen, wenn vorhanden und nicht im DEBUG-Modus.
+REDIS_URL = os.environ.get("REDIS_URL")
+
+if REDIS_URL and not DEBUG:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
+    # Hinweis: Für channels-redis v4.x wird eine einzelne URL erwartet.
+    # Für ältere Versionen oder spezifischere Konfigurationen (z.B. Sentinel)
+    # müsste die "CONFIG" Struktur angepasst werden.
+    # Beispiel für v3.x mit Host/Port:
+    # "CONFIG": {
+    #     "hosts": [('localhost', 6379)], # oder aus REDIS_HOST, REDIS_PORT env vars
+    # },
+else:
+    # Fallback auf InMemoryChannelLayer für Entwicklung oder wenn REDIS_URL nicht gesetzt ist.
+    # Dies ist NICHT für Produktion geeignet, wenn mehrere Instanzen laufen.
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
+    if not REDIS_URL and not DEBUG:
+        print(
+            "WARNUNG: REDIS_URL nicht gesetzt und DEBUG=False. "
+            "Channels verwendet InMemoryChannelLayer, was nicht für Produktion geeignet ist."
+        )
+    elif DEBUG:
+        print("Channels verwendet InMemoryChannelLayer (DEBUG=True).")
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
