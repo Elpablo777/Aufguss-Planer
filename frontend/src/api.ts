@@ -75,4 +75,44 @@ export async function fetchUsers() {
   return response.json();
 }
 
+export async function createUser(user: any) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'users/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(user)
+  });
+  if (!response.ok) throw new Error('Fehler beim Erstellen des Benutzers');
+  return response.json();
+}
+
+export async function updateUser(user: any) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'users/' + user.id + '/', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(user)
+  });
+  if (!response.ok) throw new Error('Fehler beim Aktualisieren des Benutzers');
+  return response.json();
+}
+
+export async function deleteUser(id: number) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'users/' + id + '/', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Fehler beim Löschen des Benutzers');
+  return true;
+}
+
 // Weitere API-Methoden folgen analog
