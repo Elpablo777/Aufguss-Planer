@@ -10,7 +10,22 @@ export async function login(username: string, password: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
   });
-  if (!response.ok) throw new Error('Login fehlgeschlagen');
+  if (!response.ok) {
+    let errorMessage = 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.';
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.detail) {
+        errorMessage = errorData.detail;
+      } else if (errorData && typeof errorData === 'object' && Object.keys(errorData).length > 0) {
+        // Fallback, falls 'detail' nicht existiert, aber andere Fehlerdetails vorhanden sind
+        errorMessage = Object.values(errorData).flat().join(' ');
+      }
+    } catch (e) {
+      // JSON-Parsing fehlgeschlagen oder keine JSON-Antwort
+      errorMessage = `Login fehlgeschlagen (Status: ${response.status}).`;
+    }
+    throw new Error(errorMessage);
+  }
   const data = await response.json();
   localStorage.setItem('access', data.access);
   localStorage.setItem('refresh', data.refresh);

@@ -49,6 +49,9 @@ Für Tests wird automatisch SQLite verwendet, wenn `PYTEST_CURRENT_TEST` (von py
 
 *   Die `backend/requirements.txt` verwendet nun `psycopg2-binary` statt `psycopg2` für eine einfachere Installation.
 *   **Consumer-Tests:** Für `AufgussConsumer` und `ChatConsumer` wurden grundlegende Tests mit `channels.testing.WebsocketCommunicator` in `backend/aufguss_backend/tests.py` hinzugefügt. Diese sind als `@pytest.mark.asyncio` markiert.
-*   **Frontend-Komponententests:** Erste Komponententests für `Login.tsx` wurden in `frontend/src/__tests__/Login.test.tsx` erstellt, die `@testing-library/react` verwenden und den `AuthContext` mocken.
+*   **Frontend-Komponententests:** Erste Komponententests für `Login.tsx` wurden in `frontend/src/__tests__/Login.test.tsx` erstellt, die `@testing-library/react` verwenden und den `AuthContext` mocken. Für `Calendar.tsx` wurde ein Testgerüst in `frontend/src/__tests__/Calendar.test.tsx` angelegt:
+    *   Das Modul `frontend/src/api.ts` wird via `jest.mock('../api')` gemockt.
+    *   FullCalendar-Komponenten werden via `jest.config.js` und dem Mock in `frontend/__mocks__/fullcalendar-react.js` gemockt. Der Mock wurde angepasst, um ein identifizierbares Element für Tests zu rendern.
+    *   Globale `WebSocket` und `localStorage` werden bei Bedarf in den Testdateien gemockt.
 
 Bitte halte dich an diese Hinweise, um die Konsistenz und Qualität des Projekts zu gewährleisten.

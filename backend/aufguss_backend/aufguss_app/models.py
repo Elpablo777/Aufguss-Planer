@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from colorfield.fields import ColorField
 import uuid
+import datetime # Import für datetime Typen
+# Für ForeignKey Beziehungen ist der Typ die jeweilige Modellklasse, z.B. SaunaUser
+# Für OneToOneField (wie user zu User) ist es User.
+# Für CharField, TextField ist es str.
+# Für BooleanField ist es bool.
+# Für DateTimeField ist es datetime.datetime.
+# Für UUIDField ist es uuid.UUID.
+# Für ImageField ist es django.db.models.fields.files.ImageFieldFile.
 
 class SaunaUser(models.Model):
     """
@@ -17,7 +25,8 @@ class SaunaUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    def __str__(self):
+    def __str__(self) -> str:
+        # self.full_name ist ein CharField, also str
         return self.full_name
 
 class AufgussSession(models.Model):
@@ -38,7 +47,8 @@ class AufgussSession(models.Model):
         verbose_name = 'Aufguss'
         verbose_name_plural = 'Aufgüsse'
     
-    def __str__(self):
+    def __str__(self) -> str:
+        # self.title ist CharField (str), self.start_time ist DateTimeField (datetime.datetime)
         return f"{self.title} - {self.start_time.strftime('%d.%m.%Y, %H:%M')}"
 
 class ChatMessage(models.Model):
@@ -52,5 +62,7 @@ class ChatMessage(models.Model):
     class Meta:
         ordering = ['timestamp']
     
-    def __str__(self):
+    def __str__(self) -> str:
+        # self.sender ist ein ForeignKey zu SaunaUser, dessen __str__ Methode str zurückgibt.
+        # self.timestamp ist ein DateTimeField (datetime.datetime).
         return f"{self.sender} - {self.timestamp.strftime('%d.%m.%Y, %H:%M')}"

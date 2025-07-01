@@ -7,19 +7,21 @@ import Chat from './components/Chat';
 import LogoutButton from './components/LogoutButton';
 import AdminPanel from './components/AdminPanel';
 
+import './styles.css'; // Importiere die globale CSS-Datei
+
 const Main: React.FC = () => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? (
-    <div>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', background: '#e3e3e3' }}>
+    <div className="app-container">
+      <header className="app-header">
         <h1>Sauna-Aufguss-Planer</h1>
         <LogoutButton />
       </header>
-      <main style={{ maxWidth: 1200, margin: '2rem auto', display: 'flex', gap: '2rem' }}>
-        <section style={{ flex: 2 }}>
+      <main className="app-main-authenticated">
+        <section className="app-main-content">
           <Calendar />
         </section>
-        <aside style={{ flex: 1 }}>
+        <aside className="app-sidebar">
           <UserList />
           <Chat />
           <AdminPanel />
@@ -27,7 +29,9 @@ const Main: React.FC = () => {
       </main>
     </div>
   ) : (
-    <Login />
+    <div className="login-form-container"> {/* Wrapper für Zentrierung */}
+      <Login />
+    </div>
   );
 };
 

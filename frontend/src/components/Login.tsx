@@ -12,8 +12,12 @@ const Login: React.FC = () => {
     setError('');
     try {
       await login(username, password);
-    } catch (err) {
-      setError('Login fehlgeschlagen');
+    } catch (err: any) { // err als any typisieren, um auf .message zugreifen zu können
+      if (err && err.message) {
+        setError(err.message);
+      } else {
+        setError('Ein unbekannter Fehler ist aufgetreten.');
+      }
     }
   };
 
