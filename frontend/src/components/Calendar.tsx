@@ -1,10 +1,95 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { AufgussSession } from '../types';
+import { fetchAufguesse, createAufguss, updateAufguss, deleteAufguss } from '../api';
+import AufgussDialog from './AufgussDialog';
 
 const Calendar: React.FC = () => {
+  const [aufguesse, setAufguesse] = useState<AufgussSession[]>([]);
+  const [selectedAufguss, setSelectedAufguss] = useState<AufgussSession | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+
+  useEffect(() => {
+    loadAufguesse();
+  }, []);
+
+  const loadAufguesse = async () => {
+    try {
+      const data = await fetchAufguesse();
+      setAufguesse(data);
+    } catch (error) {
+      // Fehlerbehandlung
+      alert('Fehler beim Laden der Aufgüsse');
+    }
+  };
+
+  const handleDateSelect = (selectInfo: any) => {
+    setIsCreating(true);
+    setSelectedAufguss({
+      id: '',
+      title: '',
+      description: '',
+      start_time: selectInfo.startStr,
+      end_time: selectInfo.endStr,
+      created_by: 0,
+      created_by_username: '',
+      created_by_color: ''
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEventClick = (clickInfo: any) => {
+    const aufguss = aufguesse.find(a => a.id === clickInfo.event.id);
+    if (aufguss) {
+      setIsCreating(false);
+      setSelectedAufguss(aufguss);
+      setIsDialogOpen(true);
+    }
+  };
+
+  const handleSaveAufguss = async (aufguss: AufgussSession) => {
+    try {
+      if (isCreating) {
+        await createAufguss(aufguss);
+      } else {
+        await updateAufguss(aufguss);
+      }
+      setIsDialogOpen(false);
+      loadAufguesse();
+    } catch (error) {
+      alert('Fehler beim Speichern des Aufgusses');
+    }
+  };
+
+  const handleDeleteAufguss = async () => {
+    if (selectedAufguss) {
+      try {
+        await deleteAufguss(selectedAufguss.id);
+        setIsDialogOpen(false);
+        loadAufguesse();
+      } catch (error) {
+        alert('Fehler beim Löschen des Aufgusses');
+      }
+    }
+  };
+
+  const events = aufguesse.map(aufguss => ({
+    id: aufguss.id,
+    title: aufguss.title,
+    start: aufguss.start_time,
+    end: aufguss.end_time,
+    backgroundColor: aufguss.created_by_color,
+    borderColor: aufguss.created_by_color,
+    extendedProps: {
+      description: aufguss.description,
+      createdBy: aufguss.created_by_username
+    }
+  }));
+
   return (
     <div className="calendar-container">
       <FullCalendar
@@ -19,11 +104,24 @@ const Calendar: React.FC = () => {
         selectable={true}
         dayMaxEvents={true}
         weekends={true}
+        events={events}
+        select={handleDateSelect}
+        eventClick={handleEventClick}
         locale="de"
         firstDay={1}
         slotMinTime="06:00:00"
         slotMaxTime="23:00:00"
       />
+      {isDialogOpen && selectedAufguss && (
+        <AufgussDialog
+          aufguss={selectedAufguss}
+          isOpen={isDialogOpen}
+          isCreating={isCreating}
+          onClose={() => setIsDialogOpen(false)}
+          onSave={handleSaveAufguss}
+          onDelete={handleDeleteAufguss}
+        />
+      )}
     </div>
   );
 };

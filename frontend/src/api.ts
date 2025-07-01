@@ -26,4 +26,53 @@ export async function fetchAufguesse() {
   return response.json();
 }
 
-// Weitere API-Methoden (createAufguss, updateAufguss, deleteAufguss, fetchUsers, etc.) folgen analog
+export async function createAufguss(aufguss: any) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'aufguesse/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(aufguss)
+  });
+  if (!response.ok) throw new Error('Fehler beim Erstellen des Aufgusses');
+  return response.json();
+}
+
+export async function updateAufguss(aufguss: any) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'aufguesse/' + aufguss.id + '/', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(aufguss)
+  });
+  if (!response.ok) throw new Error('Fehler beim Aktualisieren des Aufgusses');
+  return response.json();
+}
+
+export async function deleteAufguss(id: string) {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'aufguesse/' + id + '/', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Fehler beim Löschen des Aufgusses');
+  return true;
+}
+
+export async function fetchUsers() {
+  const token = localStorage.getItem('access');
+  const response = await fetch(API_URL + 'users/', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Fehler beim Laden der Benutzer');
+  return response.json();
+}
+
+// Weitere API-Methoden folgen analog
