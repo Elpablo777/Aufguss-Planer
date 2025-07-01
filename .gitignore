@@ -1,0 +1,49 @@
+# .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Django
+*.db
+*.sqlite3
+media/
+staticfiles/
+
+# React/Node
+node_modules/
+build/
+dist/
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Sonstiges
+.DS_Store
+*.swp
+*.swo
+.idea/
+*.iml
+
+# Test/CI
+coverage/
+htmlcov/
+.tox/
+.pytest_cache/
+
+# System
+Thumbs.db
